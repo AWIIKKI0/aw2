@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>趣旅追风 - 最终完美版</title>
+    <style>
+    :root {
+        --soft-yellow: #FFF3B0;
+        --soft-pink: #FFB3D9;
+        --soft-green: #B8E994;
+        --glass-bg: rgba(255, 255, 255, 0.25);
+        --text-dark: #5A5A5A;
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background: radial-gradient(circle at 50% 20%,
+            var(--soft-yellow) 0%,
+            var(--soft-pink) 50%,
+            var(--soft-green) 100%);
+        font-family: 'Space Grotesk', sans-serif;
+        min-height: 100vh;
+        backdrop-filter: blur(20px);
+        overflow-x: hidden;
+        position: relative;
+    }
+
+    .mellow-header {
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        position: relative;
+        z-index: 10;
+    }
+
+    .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .logo-container h1 {
+        font-family: 'Noto Serif SC', serif;
+        color: var(--text-dark);
+        font-size: 2.2rem;
+        letter-spacing: 2px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .natural-emojis {
+        display: flex;
+        gap: 0.5rem;
+        font-size: 1.5rem;
+    }
+
+    .search-container {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .mellow-button {
+        background: rgba(255,255,255,0.9);
+        border: none;
+        color: var(--text-dark);
+        padding: 0.8rem 1.5rem;
+        border-radius: 12px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .mellow-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+    }
+
+    .mellow-card {
+        background: var(--glass-bg);
+        border-radius: 24px;
+        padding: 1.8rem;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .mellow-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+    }
+
+    .result-bubble {
+        margin-top: 1.5rem;
+        padding: 1.2rem;
+        background: rgba(255,255,255,0.85);
+        border-radius: 16px;
+        min-height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        line-height: 1.6;
+        color: var(--text-dark);
+        box-shadow: inset 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    /* 日记模块 */
+    .diary-module {
+        position: relative;
+        width: 100%;
+        background: var(--glass-bg);
+        border-radius: 24px;
+        padding: 1.2rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    @media (max-width: 1200px) {
+        .mellow-grid {
+            padding: 2rem;
+        }
+    }
+
+    .diary-header {
+        display: flex;
+        gap: 0.8rem;
+        margin-bottom: 1rem;
+    }
+
+    #diaryDate {
+        flex: 1;
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 8px;
+        padding: 0.5rem;
+        font-family: inherit;
+    }
+
+    .diary-content {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .diary-record {
+        background: rgba(184,233,148,0.2);
+        border-radius: 8px;
+        padding: 0.8rem;
+        margin: 0.5rem 0;
+        font-size: 0.9em;
+    }
+
+    #diaryNote {
+        width: 100%;
+        height: 80px;
+        margin: 1rem 0;
+        padding: 0.8rem;
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 8px;
+        resize: none;
+    }
+
+    /* 对话模块 */
+    .chat-module {
+        background: var(--glass-bg);
+        border-radius: 24px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .chat-history {
+        height: 300px;
+        overflow-y: auto;
+        margin-bottom: 1rem;
+    }
+
+    .chat-bubble {
+        background: rgba(255,255,255,0.85);
+        border-radius: 15px;
+        padding: 1rem;
+        margin: 0.5rem 0;
+        max-width: 80%;
+    }
+
+    .chat-bubble.fox {
+        background: rgba(255,167,38,0.15);
+        align-self: flex-start;
+    }
+
+    .chat-input-group {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .chat-input {
+        flex: 1;
+        padding: 0.8rem;
+        border-radius: 12px;
+        border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    /* 音乐播放器 */
+    .music-panel {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        padding: 1rem;
+        width: 200px;
+        border-radius: 24px;
+        transform: scale(0);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        z-index: 100;
+        border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .music-panel.active {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    .music-minimized {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        animation: bounce 1s infinite;
+        z-index: 100;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
+    }
+
+    /* 欢迎弹窗 */
+    .welcome-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.9); /* 更轻松明快的背景色 */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .welcome-content {
+        background: rgba(255, 255, 255, 0.95); /* 更明亮的背景色 */
+        border-radius: 24px;
+        padding: 2rem;
+        text-align: center;
+        max-width: 500px;
+        box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+        border: 1px solid rgba(255,255,255,0.5);
+    }
+
+    .welcome-content h2 {
+        color: #FF6B6B; /* 更活泼的标题颜色 */
+        margin-bottom: 1rem;
+    }
+
+    .welcome-content p {
+        color: #5A5A5A;
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+    }
+
+    .welcome-close {
+        background: #4ECDC4; /* 更清新的按钮颜色 */
+        border: none;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 12px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .welcome-close:hover {
+        background: #27AE60; /* 按钮悬停时的颜色变化 */
+    }
+
+    /* 飘落的 emoji */
+    .emoji {
+        position: absolute;
+        font-size: 2rem;
+        animation: fall linear infinite;
+        z-index: 2; /* 确保 emoji 飘落在内容框上方 */
+    }
+
+    @keyframes fall {
+        0% {
+            transform: translateY(-100px);
+            opacity: 0;
+        }
+        10% {
+            opacity: 1;
+        }
+        90% {
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(calc(100vh + 100px));
+            opacity: 0;
+        }
+    }
+<style>
+/* 新增样式 */
+.calendar-container {
+    padding: 1rem;
+}
+
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.calendar-header h3 {
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.icon-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 1.5rem;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.3);
+    border-radius: 8px;
+    font-size: 0.9em;
+    transition: all 0.2s ease;
+}
+
+.calendar-day.has-record {
+    background: linear-gradient(135deg, 
+        var(--soft-pink) 20%, 
+        var(--soft-green) 80%);
+    color: white;
+    font-size: 0; /* 隐藏数字 */
+}
+
+.calendar-day.has-record::after {
+    content: "🌸";
+    font-size: 1.2rem;
+}
+
+.progress-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 8px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar::after {
+    content: "";
+    display: block;
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, 
+        var(--soft-green) 0%, 
+        var(--soft-pink) 100%);
+    transition: width 0.5s ease;
+}
+.progress-bar::after {
+    /* 其他样式保持不变 */
+    width: var(--progress-width, 0%); /* 添加这一行 */
+}
+#progressText {
+    color: var(--text-dark);
+    font-size: 0.9em;
+    white-space: nowrap;
+}
+</style>
+
+    </style>
+</head>
+<body>
+    <header class="mellow-header">
+        <div class="logo-container">
+            <h1>趣旅追风</h1>
+            <div class="natural-emojis">
+                🌞 🌈 🌸 🌿 🌟
+            </div>
+        </div>
+        <div class="search-container">
+            <input type="text" class="mellow-button" id="searchInput" placeholder="🔍 搜索按钮功能搜索...">
+            <button class="mellow-button" onclick="searchDiary()">搜索</button>
+        </div>
+    </header>
+
+    <main class="mellow-grid">
+        <!-- 功能卡片 -->
+        <section class="mellow-card">
+            <h2>🌿 自然罗盘</h2>
+            <div class="hologram-effect"></div>
+            <button class="mellow-button" onclick="generateCompass()">生成漫游路径</button>
+            <div class="result-bubble" id="compass-result"></div>
+        </section>
+
+        <section class="mellow-card">
+            <h2>🎁 惊喜盲盒</h2>
+            <div class="hologram-effect"></div>
+            <button class="mellow-button" onclick="openMysteryBox()">开启今日惊喜</button>
+            <div class="result-bubble" id="mystery-result"></div>
+        </section>
+
+        <section class="mellow-card">
+            <h2>🎲 命运骰子</h2>
+            <div class="hologram-effect"></div>
+            <button class="mellow-button" onclick="rollDice()">投掷随机指令</button>
+            <div class="result-bubble" id="dice-result"></div>
+        </section>
+<section class="mellow-card">
+    <h2>📆 追风日历</h2>
+    <div class="calendar-container">
+        <!-- 日历头部 -->
+        <div class="calendar-header">
+            <button class="mellow-button icon-btn" onclick="changeMonth(-1)">◀</button>
+            <h3 id="currentMonth"></h3>
+            <button class="mellow-button icon-btn" onclick="changeMonth(1)">▶</button>
+        </div>
+        
+        <!-- 日历主体 -->
+        <div class="calendar-grid" id="calendarGrid"></div>
+        
+        <!-- 进度条 -->
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+            <span id="progressText">伴你0场追风</span>
+        </div>
+    </div>
+</section>
+
+       <!-- 对话模块 -->
+        <div class="chat-module">
+            <h2>🦊 旅行商社</h2>
+            <div class="chat-history" id="chatHistory">
+                <div class="chat-bubble fox">
+                    <div class="fox-icon">🦊</div>
+                    <p>欢迎来到旅行商社！我是小狐狸老板，可以问我这些问题：<br>
+                    • 今天的任务建议<br>
+                    • 天气情况<br>
+                    • 装备推荐<br>
+                    • 记录心情</p>
+                </div>
+            </div>
+            <div class="chat-input-group">
+                <input type="text" class="chat-input" id="chatInput" placeholder="输入消息...">
+                <button class="mellow-button" onclick="sendMessage()">发送</button>
+            </div>
+        </div>
+
+        <!-- 日记模块 -->
+        <div class="diary-module">
+            <div class="diary-header">
+                <input type="date" id="diaryDate">
+                <button class="mellow-button" onclick="loadDiary()">📅 查看日记</button>
+            </div>
+            <div class="diary-content">
+                <div id="recordsList"></div>
+                <textarea id="diaryNote" placeholder="✍️ 记录此刻心情..."></textarea>
+                <button onclick="saveDiary()" class="mellow-button">💾 保存日记</button>
+                <div id="encouragement"></div>
+            </div>
+            <button onclick="clearDiary()" class="mellow-button" style="margin-top:1rem">⚠️ 清空所有记录</button>
+        </div>
+    </main>
+
+    <!-- 音乐组件 -->
+    <div class="music-minimized" onclick="toggleMusicPanel()">
+        <span class="music-emoji">🎵</span>
+    </div>
+    <div class="music-panel" id="musicPanel">
+        <div class="music-header">
+            <span>🎶 旅行旋律</span>
+            <button class="mellow-button" onclick="toggleMusicPanel()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <audio id="bgm" loop></audio>
+        <div class="playlist">
+            <button class="mellow-button" onclick="playMusic(0)">🌿 森林之音</button>
+            <button class="mellow-button" onclick="playMusic(1)">🌊 海浪韵律</button>
+            <button class="mellow-button" onclick="playMusic(2)">☕️ 咖啡馆时光</button>
+        </div>
+    </div>
+
+    <!-- 欢迎弹窗 -->
+    <div class="welcome-modal" id="welcomeModal">
+        <div class="welcome-content">
+            <h2>欢迎回来！</h2>
+            <p id="welcomeMessage">继续我们的探险旅程吧！</p>
+            <button class="welcome-close" onclick="closeWelcomeModal()">开始探险</button>
+        </div>
+    </div>
+
+    <script>
+    // 数据存储
+    const travelData = {
+        compass: [
+            '沿着风吹来的方向漫步十分钟',
+            '寻找三片不同形状的叶子',
+            '跟随云朵移动的轨迹行走'
+        ],
+        mystery: [
+            '收集五种自然声音',
+            '找到三种不同的地面纹理',
+            '记录三种光影变化的瞬间',
+            '寻找会反光的物体表面',
+            '发现四种不同的绿色'
+        ],
+        dice: {
+            1: "在下一路口左转探索",
+            2: "往前走两个十字路口",
+            3: "拍摄三处有趣的建筑细节",
+            4: "寻找四个圆形物体并拍照",
+            5: "收集五种不同的声音",
+            6: "与六位陌生人微笑打招呼",
+            7: "寻找七种颜色的自然物体",
+            8: "拍摄八种不同材质的表面",
+            9: "发现九宫格构图的场景",
+            10: "记录十个特色店铺招牌",
+            11: "寻找十一片不同形状的叶子",
+            12: "沿当前方向漫步十二分钟"
+        }
+    };
+
+    // 音乐链接
+    const musicList = [
+        "https://assets.mixkit.co/music/preview/mixkit-forest-breeze-1293.mp3 ",
+        "https://assets.mixkit.co/music/preview/mixkit-deep-relaxation-443.mp3 ",
+        "https://assets.mixkit.co/music/preview/mixkit-lofi-chill-01-627.mp3 "
+    ];
+
+    // 搜索功能
+    function searchDiary() {
+        const searchTerm = document.getElementById('searchInput').value.trim();
+        if (!searchTerm) return;
+
+        // 检查是否是日期格式（YYYY-MM-DD）
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (dateRegex.test(searchTerm)) {
+            // 如果是日期格式，加载对应日期的日记
+            document.getElementById('diaryDate').value = searchTerm;
+            loadDiary();
+        } else {
+            // 如果不是日期格式，执行默认搜索逻辑
+            alert(`搜索功能已触发，关键词：${searchTerm}`);
+            // 这里可以添加更多搜索逻辑
+        }
+    }
+
+    // 核心功能
+    function generateCompass() {
+        const resultBox = document.getElementById('compass-result');
+        resultBox.textContent = travelData.compass[Math.floor(Math.random()*3)];
+        localStorage.setItem('lastActionType', '指南针导航');
+        localStorage.setItem('lastActionContent', resultBox.textContent);
+    }
+
+    function openMysteryBox() {
+        const resultBox = document.getElementById('mystery-result');
+        resultBox.textContent = travelData.mystery[Math.floor(Math.random()*5)];
+        localStorage.setItem('lastActionType', '旅行盲盒');
+        localStorage.setItem('lastActionContent', resultBox.textContent);
+    }
+
+    function rollDice() {
+        const result = Math.ceil(Math.random()*12);
+        const resultBox = document.getElementById('dice-result');
+        resultBox.textContent = `${result}号指令 → ${travelData.dice[result]}`;
+        localStorage.setItem('lastActionType', '命运骰子');
+        localStorage.setItem('lastActionContent', resultBox.textContent);
+    }
+
+    // 日记系统
+    const encouragements = [
+        "今天又是充满惊喜的一天呢！(๑>ᴗ<๑)",
+        "你的冒险故事真精彩！✧٩(ˊωˋ*)و✧",
+        "每一步都是独特的风景哦～♪(^∇^*)",
+        "记忆宝箱又增加新收藏啦！( •̀ ω •́ )✧",
+        "旅行达人非你莫属！٩(◕‿◕)۶"
+    ];
+
+    function loadDiary() {
+        const date = document.getElementById('diaryDate').value;
+        const records = JSON.parse(localStorage.getItem(`diary_${date}`)) || [];
+        document.getElementById('recordsList').innerHTML = records.map(r => `
+            <div class="diary-record">
+                <strong>${r.time}</strong> 
+                [${r.type}] ${r.content}
+                ${r.note ? `<br>📝 ${r.note}` : ''}
+            </div>
+        `).join('');
+    }
+
+    function saveDiary() {
+        const record = {
+            time: new Date().toLocaleTimeString('zh-CN'),
+            type: localStorage.getItem('lastActionType') || '未知类型',
+            content: localStorage.getItem('lastActionContent') || '无记录',
+            note: document.getElementById('diaryNote').value
+        };
+        const date = document.getElementById('diaryDate').value || new Date().toISOString().split('T')[0];
+        const records = JSON.parse(localStorage.getItem(`diary_${date}`)) || [];
+        records.push(record);
+        localStorage.setItem(`diary_${date}`, JSON.stringify(records));
+        document.getElementById('encouragement').innerHTML = encouragements[Math.floor(Math.random()*5)];
+        loadDiary();
+        document.getElementById('diaryNote').value = '';
+    }
+
+    function clearDiary() {
+        if(confirm('确定要清空所有日记记录吗？此操作不可恢复！')) {
+            localStorage.clear();
+            loadDiary();
+        }
+    }
+
+
+    // 对话功能
+    function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const history = document.getElementById('chatHistory');
+        
+        // 添加用户消息
+        history.innerHTML += `
+            <div class="chat-bubble" style="margin-left: auto">
+                ${input.value}
+            </div>
+        `;
+
+        // 获取小狐狸回复
+        const response = getFoxResponse(input.value);
+        history.innerHTML += `
+            <div class="chat-bubble fox">
+                🦊：${response}
+            </div>
+        `;
+
+        // 滚动到底部
+        history.scrollTop = history.scrollHeight;
+        input.value = '';
+    }
+
+// 在foxResponses对象前添加任务建议函数
+function getTaskAdvice(task) {
+    const adviceMap = {
+        "沿着风吹来的方向漫步十分钟": "可以沿途观察云朵形状的变化",
+        "寻找三片不同形状的叶子": "建议携带便携标本夹进行收集",
+        "跟随云朵移动的轨迹行走": "记得每5分钟拍一张云层变化照片",
+        "收集五种自然声音": "推荐使用手机录音功能并标注时间地点",
+        "找到三种不同的地面纹理": "可尝试用拓印纸记录",
+        // 添加其他任务对应的建议...
+        "default": "保持好奇心，享受探索过程！"
+    };
+    return adviceMap[task] || adviceMap.default;
+}
+
+// 修改后的getFoxResponse函数
+function getFoxResponse(text) {
+    const foxResponses = {
+        "天气": ["记得带伞哦", "今天阳光很好适合拍照", "微风适合放风筝"],
+        "装备": ["推荐携带便携水壶", "记得穿舒适的运动鞋", "带上防晒霜"],
+        "任务": () => {
+            const todayTask = localStorage.getItem('lastActionContent') || "随机探索";
+            // 添加任务存在性检查
+            if (!todayTask || todayTask === "无记录") {
+                return "你还没有生成今日任务哦，先试试自然罗盘或命运骰子吧！🎯";
+            }
+            return `根据你的今日任务「${todayTask}」，建议：${getTaskAdvice(todayTask)}`;
+        },
+        "心情": ["记录心情是旅行中最美好的部分", "心情会成为回忆中最珍贵的部分"],
+        "default": ["很有趣的提问呢", "要不要试试换个角度思考？", "这个需要亲身体验才知道哦"]
+    };
+
+    // 优化关键词匹配逻辑
+    const matchedKey = Object.keys(foxResponses).find(key => 
+        text.includes(key) || 
+        (key === "任务" && /任务|挑战|今日目标/.test(text))
+    );
+
+    if (matchedKey) {
+        const response = foxResponses[matchedKey];
+        return typeof response === 'function' ? 
+            response() : 
+            response[Math.floor(Math.random()*response.length)];
+    }
+    return foxResponses.default[Math.floor(Math.random()*foxResponses.default.length)];
+}   
+ // 音乐系统
+    let currentTrack = 0;
+    const audio = document.getElementById('bgm');
+
+    function playMusic(index) {
+        currentTrack = index;
+        audio.src = musicList[index];
+        try {
+            audio.play();
+        } catch (error) {
+            console.log("音乐加载失败，请检查网络连接或链接合法性");
+        }
+    }
+
+    function toggleMusicPanel() {
+        const panel = document.getElementById('musicPanel');
+        panel.classList.toggle('active');
+    }
+
+    // 欢迎弹窗
+    const welcomeMessages = [
+        "欢迎回来！继续我们的探险旅程吧！",
+        "嘿，旅行者！准备好新的冒险了吗？",
+        "今天又是充满惊喜的一天，出发吧！",
+        "旅途中的每一刻都值得珍藏！",
+        "新的旅程即将开始，你准备好了吗？"
+    ];
+
+    function showWelcomeModal() {
+        const welcomeModal = document.getElementById('welcomeModal');
+        const welcomeMessage = document.getElementById('welcomeMessage');
+        welcomeMessage.textContent = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+        welcomeModal.style.display = 'flex';
+    }
+
+    function closeWelcomeModal() {
+        const welcomeModal = document.getElementById('welcomeModal');
+        welcomeModal.style.display = 'none';
+    }
+
+    // 飘落的 emoji
+    function createEmojis() {
+        const emojis = ['🌞', '🌈', '🌸', '🎉', '✨', '💫', '🌟', '🌼', '🌻', '🌺'];
+        const emojiCount = 30;
+        const headerHeight = document.querySelector('.mellow-header').offsetHeight;
+
+        for (let i = 0; i < emojiCount; i++) {
+            const emoji = document.createElement('div');
+            emoji.className = 'emoji';
+            emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            emoji.style.left = `${Math.random() * 100}%`;
+            emoji.style.top = `-${Math.random() * 100}px`;
+            emoji.style.animationDuration = `${5 + Math.random() * 10}s`;
+            emoji.style.animationDelay = `${Math.random() * 5}s`;
+            document.body.appendChild(emoji);
+        }
+    }
+
+    // 初始化设置
+    window.addEventListener('load', () => {
+        try {
+            playMusic(0);
+        } catch (error) {
+            console.log("音乐加载失败，请检查网络连接或链接合法性");
+        }
+        document.getElementById('musicPanel').classList.remove('active');
+        showWelcomeModal();
+        createEmojis();
+    });
+    </script>
+<script>
+// 新增日历功能
+let currentDate = new Date();
+
+function updateCalendar() {
+    // 计算当月信息
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay();
+
+    // 更新月份显示
+    document.getElementById('currentMonth').textContent = 
+        `${year}年${(month + 1).toString().padStart(2, '0')}月`;
+
+    // 生成日期格子
+    let calendarHTML = '';
+    for (let i = 0; i < firstDay; i++) {
+        calendarHTML += `<div class="calendar-day"></div>`;
+    }
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+        const hasRecord = localStorage.getItem(`diary_${dateStr}`) !== null;
+        calendarHTML += `
+            <div class="calendar-day ${hasRecord ? 'has-record' : ''}">
+                ${day}
+            </div>
+        `;
+    }
+    document.getElementById('calendarGrid').innerHTML = calendarHTML;
+
+    // 更新进度条
+    updateProgress();
+}
+
+function changeMonth(offset) {
+    currentDate.setMonth(currentDate.getMonth() + offset);
+    updateCalendar();
+}
+
+function updateProgress() {
+    // 统计所有日记记录（优化版）
+    let totalRecords = 0;
+    
+    // 遍历localStorage并过滤日记条目
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('diary_')) {
+            try {
+                // 确保解析为有效数组
+                const records = JSON.parse(localStorage.getItem(key)) || [];
+                totalRecords += records.length;
+            } catch (e) {
+                console.error("解析日记记录出错:", e);
+            }
+        }
+    }
+    
+    // 更新进度条（修正版）
+    const progressBar = document.querySelector('.progress-bar');
+    const percentage = Math.min(totalRecords * 10, 100); // 每10条记录填满100%
+    
+    // 使用CSS变量方式更新进度
+    progressBar.style.setProperty('--progress-width', `${percentage}%`);
+    
+    // 更新文字（确保数值显示正确）
+    document.getElementById('progressText').textContent = 
+        `伴你${totalRecords}场追风`;
+}
+// 初始化日历
+window.addEventListener('load', updateCalendar);
+</script>
+</body>
+</html>
